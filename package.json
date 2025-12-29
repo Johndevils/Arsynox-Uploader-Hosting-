@@ -1,12 +1,12 @@
 {
   "name": "arsynox-telegram-bot",
   "version": "2.0.0",
-  "description": "Telegram Bot with URL Upload, File Streaming & Speed Test",
+  "type": "module",
   "main": "worker.js",
   "scripts": {
-    "deploy": "wrangler deploy",
     "dev": "wrangler dev",
-    "secret:set": "wrangler secret put"
+    "deploy": "wrangler deploy",
+    "start": "wrangler dev"
   },
   "devDependencies": {
     "wrangler": "^3.0.0"
