@@ -1,9 +1,9 @@
 // worker.js - Arsynox Bot (Fixed: No ReferenceError)
 
 // ---------- Global Configuration (Initialized in fetch) ---------- //
-let BOT_TOKEN = "8154077368:AAHf4q35IapLHwyJ9DFkAmvy0wXwk2MXNNE";
-let BOT_SECRET = "f47954797405532e02a813d6a4d589f9";
-let SIA_SECRET = "f47954797405532e02a813d6a4d589f9";
+let BOT_TOKEN = "";
+let BOT_SECRET = "";
+let SIA_SECRET = "";
 let TELEGRAM_API = "https://api.telegram.org/bot${BOT_TOKEN}"; 
 let DB = null; // FIXED: Initialize as null, do not use BOT_USERS here
 
