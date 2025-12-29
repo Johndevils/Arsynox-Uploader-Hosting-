@@ -1,4 +1,4 @@
-name = "arsynox-telegram-bot"
+name = "arsynox-tg-bot"
 main = "worker.js"
 compatibility_date = "2024-01-01"
 
