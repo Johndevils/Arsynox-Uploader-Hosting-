@@ -9,7 +9,7 @@ compatibility_date = "2024-01-01"
 # -----------------------------------------------------
 [[kv_namespaces]]
 binding = "BOT_USERS"
-id = "REPLACE_WITH_YOUR_KV_ID_HERE"
+id = "77a1a39f4f654b79bca0ab72445586e0"
 
 # Note: Do not put [vars] here for Secrets (Token).
 # Use 'npx wrangler secret put BOT_TOKEN' instead.
