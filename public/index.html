@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ArsyHost | Free Image Hosting With API</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .nav-link.active { border-bottom: 2px solid #3b82f6; color: #3b82f6; }
+        .hidden-section { display: none; }
+        pre { background: #0f172a; color: #e2e8f0; padding: 1.25rem; border-radius: 0.75rem; overflow-x: auto; font-size: 0.875rem; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen">
+
+    <!-- Navbar -->
+    <nav class="bg-white border-b border-slate-200 sticky top-0 z-50">
+        <div class="max-w-5xl mx-auto px-4 flex justify-between h-16">
+            <div class="flex items-center space-x-2">
+                <div class="bg-blue-600 p-2 rounded-lg text-white">
+                    <i class="fa-solid fa-bolt-lightning"></i>
+                </div>
+                <span class="text-xl font-bold tracking-tight">ArsyHost</span>
+            </div>
+            <div class="flex space-x-6 items-center">
+                <button onclick="showSection('upload')" id="btn-upload" class="nav-link active py-5 text-sm font-semibold">Upload</button>
+                <button onclick="showSection('api')" id="btn-api" class="nav-link py-5 text-sm font-semibold text-slate-500 hover:text-blue-600">API Docs</button>
+                <button onclick="showSection('about')" id="btn-about" class="nav-link py-5 text-sm font-semibold text-slate-500 hover:text-blue-600">About</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto py-10 px-4">
+        
+        <!-- SECTION: UPLOAD -->
+        <section id="section-upload">
+            <div class="max-w-lg mx-auto bg-white rounded-3xl shadow-xl shadow-slate-200/60 p-10 border border-slate-100">
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-extrabold text-slate-900">Upload Image</h1>
+                    <p class="text-slate-500 mt-2">Free, fast, and permanent hosting.</p>
+                </div>
+
+                <div id="dropZone" class="border-2 border-dashed border-slate-200 rounded-2xl p-12 text-center cursor-pointer hover:border-blue-400 hover:bg-blue-50/50 transition-all group">
+                    <input type="file" id="fileInput" class="hidden" accept="image/*">
+                    <div class="bg-slate-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-100 transition-colors">
+                        <i class="fa-solid fa-cloud-arrow-up text-2xl text-slate-400 group-hover:text-blue-600"></i>
+                    </div>
+                    <p class="text-slate-700 font-semibold">Drop your image here</p>
+                    <p class="text-xs text-slate-400 mt-2 uppercase tracking-widest font-bold">Max 20 MB</p>
+                </div>
+
+                <div id="progressContainer" class="hidden mt-6">
+                    <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                        <div id="progressBar" class="bg-blue-600 h-full w-0 transition-all duration-300"></div>
+                    </div>
+                </div>
+
+                <div id="resultArea" class="hidden mt-8 space-y-5">
+                    <div class="bg-emerald-50 text-emerald-700 p-3 rounded-xl text-sm font-medium flex items-center">
+                        <i class="fa-solid fa-circle-check mr-2 text-lg"></i> Upload Completed Successfully!
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">Public Link</label>
+                        <div class="flex mt-1.5">
+                            <input type="text" id="urlOutput" readonly class="w-full p-3 bg-slate-50 border border-slate-200 rounded-l-xl text-sm font-mono outline-none focus:border-blue-500">
+                            <button onclick="copyUrl()" class="bg-blue-600 text-white px-6 py-3 rounded-r-xl hover:bg-blue-700 font-bold text-sm transition-colors">Copy</button>
+                        </div>
+                    </div>
+                    <img id="preview" class="rounded-2xl w-full h-64 object-cover border border-slate-200 shadow-sm">
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: API DOCS -->
+        <section id="section-api" class="hidden-section">
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 md:p-12">
+                <h2 class="text-3xl font-black text-slate-900 mb-4">Developer API</h2>
+                <p class="text-slate-600 text-lg mb-10 border-l-4 border-blue-600 pl-4">Integrate high-speed image hosting into your apps with zero authentication required.</p>
+
+                <div class="space-y-10">
+                    <div>
+                        <div class="flex items-center space-x-3 mb-4">
+                            <span class="bg-green-600 text-white px-3 py-1 rounded-md text-xs font-black">POST</span>
+                            <code class="text-lg font-bold text-slate-700">/upload</code>
+                        </div>
+                        
+                        <h4 class="font-bold text-slate-800 mb-3">1. Upload with JavaScript (Fetch)</h4>
+                        <pre><code>const form = new FormData();
+form.append('file', imageFile);
+
+const res = await fetch('https://your-domain.pages.dev/upload', {
+    method: 'POST',
+    body: form
+});
+const data = await res.json();
+console.log(data.url);</code></pre>
+
+                        <h4 class="font-bold text-slate-800 mb-3 mt-6">2. Upload with Python</h4>
+                        <pre><code>import requests
+files = {'file': open('image.jpg', 'rb')}
+r = requests.post('https://your-domain.pages.dev/upload', files=files)
+print(r.json()['url'])</code></pre>
+
+                        <h4 class="font-bold text-slate-800 mb-3 mt-6">3. Response Format</h4>
+                        <pre><code>{
+  "success": true,
+  "url": "https://your-domain.pages.dev/file/AgACAgUAA...",
+  "name": "photo.jpg"
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION: ABOUT -->
+        <section id="section-about" class="hidden-section">
+            <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-10">
+                <h2 class="text-3xl font-black text-slate-900 mb-6 text-center">Cloud Storage, Simplified.</h2>
+                <p class="text-slate-600 text-center text-lg leading-relaxed mb-10">
+                    CloudHost is an open-source image hosting bridge. We use Telegram's powerful global data centers to store your images and Cloudflare's Edge Network to serve them to your users instantly.
+                </p>
+                
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-slate-50 p-6 rounded-2xl text-center">
+                        <div class="text-blue-600 text-3xl mb-3"><i class="fa-solid fa-infinity"></i></div>
+                        <h4 class="font-bold text-slate-900">Infinite</h4>
+                        <p class="text-xs text-slate-500 mt-2">No storage quotas or artificial limits.</p>
+                    </div>
+                    <div class="bg-slate-50 p-6 rounded-2xl text-center">
+                        <div class="text-blue-600 text-3xl mb-3"><i class="fa-solid fa-globe"></i></div>
+                        <h4 class="font-bold text-slate-900">Global CDN</h4>
+                        <p class="text-xs text-slate-500 mt-2">Images load from the server nearest to the user.</p>
+                    </div>
+                    <div class="bg-slate-50 p-6 rounded-2xl text-center">
+                        <div class="text-blue-600 text-3xl mb-3"><i class="fa-solid fa-code-merge"></i></div>
+                        <h4 class="font-bold text-slate-900">Open API</h4>
+                        <p class="text-xs text-slate-500 mt-2">Easy to integrate into any frontend or app.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        function showSection(name) {
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden-section'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active', 'text-blue-600'));
+            
+            document.getElementById('section-' + name).classList.remove('hidden-section');
+            document.getElementById('btn-' + name).classList.add('active', 'text-blue-600');
+        }
+
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const urlOutput = document.getElementById('urlOutput');
+        const resultArea = document.getElementById('resultArea');
+        const progressBar = document.getElementById('progressBar');
+        const progressContainer = document.getElementById('progressContainer');
+
+        dropZone.onclick = () => fileInput.click();
+        fileInput.onchange = (e) => handleUpload(e.target.files[0]);
+
+        async function handleUpload(file) {
+            if (!file) return;
+            const form = new FormData();
+            form.append('file', file);
+
+            progressContainer.classList.remove('hidden');
+            resultArea.classList.add('hidden');
+            progressBar.style.width = '40%';
+
+            try {
+                const res = await fetch('/upload', { method: 'POST', body: form });
+                const data = await res.json();
+                
+                if (data.url) {
+                    progressBar.style.width = '100%';
+                    setTimeout(() => {
+                        progressContainer.classList.add('hidden');
+                        resultArea.classList.remove('hidden');
+                        urlOutput.value = data.url;
+                        document.getElementById('preview').src = data.url;
+                    }, 400);
+                }
+            } catch (err) {
+                alert('Upload failed. Please check your connection.');
+            }
+        }
+
+        function copyUrl() {
+            urlOutput.select();
+            document.execCommand('copy');
+            alert('Link copied to clipboard!');
+        }
+    </script>
+</body>
+</html>
