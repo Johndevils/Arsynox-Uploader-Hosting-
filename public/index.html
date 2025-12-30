@@ -89,7 +89,7 @@
                         <pre><code>const form = new FormData();
 form.append('file', imageFile);
 
-const res = await fetch('https://your-domain.pages.dev/upload', {
+const res = await fetch('https://arsyhost.pages.dev//upload', {
     method: 'POST',
     body: form
 });
@@ -99,13 +99,13 @@ console.log(data.url);</code></pre>
                         <h4 class="font-bold text-slate-800 mb-3 mt-6">2. Upload with Python</h4>
                         <pre><code>import requests
 files = {'file': open('image.jpg', 'rb')}
-r = requests.post('https://your-domain.pages.dev/upload', files=files)
+r = requests.post('https://arsyhost.pages.dev//upload', files=files)
 print(r.json()['url'])</code></pre>
 
                         <h4 class="font-bold text-slate-800 mb-3 mt-6">3. Response Format</h4>
                         <pre><code>{
   "success": true,
-  "url": "https://your-domain.pages.dev/file/AgACAgUAA...",
+  "url": "https://arsyhost.pages.dev//file/AgACAgUAA...",
   "name": "photo.jpg"
 }</code></pre>
                     </div>
@@ -118,7 +118,7 @@ print(r.json()['url'])</code></pre>
             <div class="bg-white rounded-3xl shadow-sm border border-slate-200 p-10">
                 <h2 class="text-3xl font-black text-slate-900 mb-6 text-center">Cloud Storage, Simplified.</h2>
                 <p class="text-slate-600 text-center text-lg leading-relaxed mb-10">
-                    CloudHost is an open-source image hosting bridge. We use Telegram's powerful global data centers to store your images and Cloudflare's Edge Network to serve them to your users instantly.
+                    ArsyHost is an open-source image hosting bridge. We use Telegram's powerful global data centers to store your images and Cloudflare's Edge Network to serve them to your users instantly.
                 </p>
                 
                 <div class="grid md:grid-cols-3 gap-8">
