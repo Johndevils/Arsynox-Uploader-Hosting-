@@ -6,43 +6,28 @@
 <title>ArsyHost | Premium Image Hosting</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
 body{font-family:'Outfit',sans-serif;background:#0f172a;color:#f8fafc}
-.bg-orb{position:fixed;border-radius:50%;filter:blur(80px);z-index:-1;opacity:.4;animation:float 10s infinite}
-.orb-1{width:400px;height:400px;background:#4f46e5;top:-100px;left:-100px}
-.orb-2{width:300px;height:300px;background:#06b6d4;bottom:10%;right:-50px}
-.orb-3{width:200px;height:200px;background:#8b5cf6;top:40%;left:30%}
-@keyframes float{50%{transform:translate(30px,-30px)}}
-.glass-panel{background:rgba(30,41,59,.7);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.08)}
-.glass-nav{background:rgba(15,23,42,.85);backdrop-filter:blur(12px)}
 .copy-input{background:rgba(15,23,42,.6);border:1px solid rgba(255,255,255,.1);color:#94a3b8;font-family:'JetBrains Mono'}
 .copy-btn{background:linear-gradient(135deg,#4f46e5,#4338ca)}
-#toast-container{position:fixed;top:24px;right:24px;z-index:100}
 .toast{background:#1e293b;padding:14px 20px;border-left:4px solid;transform:translateX(120%);transition:.3s}
 .toast.show{transform:translateX(0)}
 .toast-success{border-color:#10b981}
 .toast-error{border-color:#ef4444}
+#toast-container{position:fixed;top:24px;right:24px;z-index:100}
 </style>
 </head>
 
-<body class="relative">
+<body class="min-h-screen flex items-center justify-center p-6">
 
-<div class="bg-orb orb-1"></div>
-<div class="bg-orb orb-2"></div>
-<div class="bg-orb orb-3"></div>
 <div id="toast-container"></div>
 
-<nav class="glass-nav sticky top-0 z-50 px-6 py-4 flex justify-between">
-<div class="text-2xl font-bold">Arsy<span class="text-indigo-400">Host</span></div>
-</nav>
+<div class="w-full max-w-3xl bg-slate-900/70 border border-slate-700 rounded-3xl p-6">
 
-<main class="min-h-screen flex items-center justify-center p-6">
-
-<section class="w-full max-w-3xl glass-panel rounded-3xl p-6">
-
+<!-- Upload -->
 <div id="dropZone" class="border-2 border-dashed border-slate-600 rounded-2xl p-14 text-center cursor-pointer">
 <input type="file" id="fileInput" hidden accept="image/*">
 <i class="fa-solid fa-cloud-arrow-up text-4xl text-indigo-400"></i>
@@ -50,23 +35,36 @@ body{font-family:'Outfit',sans-serif;background:#0f172a;color:#f8fafc}
 <p class="text-slate-400 text-sm">or click to browse</p>
 </div>
 
+<!-- Progress -->
 <div id="progressContainer" class="hidden mt-6">
 <div class="w-full h-3 bg-slate-800 rounded">
 <div id="progressBar" class="h-full bg-indigo-500 w-0"></div>
 </div>
 </div>
 
+<!-- Result -->
 <div id="resultArea" class="hidden mt-6 space-y-4">
 
 <img id="preview" class="w-full h-64 object-cover rounded-xl bg-slate-800">
 
+<div>
+<label class="text-xs text-slate-400">Direct URL</label>
 <input id="directUrl" readonly class="copy-input w-full p-3 rounded">
+</div>
+
+<div>
+<label class="text-xs text-slate-400">HTML Embed</label>
 <input id="htmlUrl" readonly class="copy-input w-full p-3 rounded">
+</div>
+
+<div>
+<label class="text-xs text-slate-400">Markdown</label>
+<input id="mdUrl" readonly class="copy-input w-full p-3 rounded">
+</div>
 
 </div>
 
-</section>
-</main>
+</div>
 
 <script>
 const dropZone=document.getElementById("dropZone");
@@ -88,6 +86,7 @@ setTimeout(()=>t.remove(),3000);
 
 async function upload(file){
 if(!file)return;
+
 progress.classList.remove("hidden");
 dropZone.classList.add("hidden");
 
@@ -98,7 +97,10 @@ let w=0;
 const anim=setInterval(()=>{if(w<90){w+=5;bar.style.width=w+"%"}},100);
 
 try{
-const res=await fetch("https://arsyhost.pages.dev/upload",{method:"POST",body:form});
+const res=await fetch("https://arsyhost.pages.dev/upload",{
+method:"POST",
+body:form
+});
 const data=await res.json();
 
 clearInterval(anim);
@@ -106,17 +108,18 @@ bar.style.width="100%";
 
 if(!data.url)throw Error("Upload failed");
 
-const cleanUrl=data.url;
+const url=data.url;
 
+// preview (document-based image still works)
 const img=new Image();
-img.onload=()=>{
-document.getElementById("preview").src=cleanUrl;
-};
-img.onerror=()=>toast("Preview failed","error");
-img.src=cleanUrl;
+img.onload=()=>document.getElementById("preview").src=url;
+img.onerror=()=>toast("Preview load failed","error");
+img.src=url;
 
-document.getElementById("directUrl").value=cleanUrl;
-document.getElementById("htmlUrl").value=`<img src="${cleanUrl}">`;
+// outputs
+document.getElementById("directUrl").value=url;
+document.getElementById("htmlUrl").value=`<img src="${url}" alt="ArsyHost Image">`;
+document.getElementById("mdUrl").value=`![ArsyHost Image](${url})`;
 
 progress.classList.add("hidden");
 document.getElementById("resultArea").classList.remove("hidden");
