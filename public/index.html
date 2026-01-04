@@ -10,124 +10,247 @@
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
-body{font-family:'Outfit',sans-serif;background:#0f172a;color:#f8fafc}
-.copy-input{background:rgba(15,23,42,.6);border:1px solid rgba(255,255,255,.1);color:#94a3b8;font-family:'JetBrains Mono'}
-.copy-btn{background:linear-gradient(135deg,#4f46e5,#4338ca)}
-.toast{background:#1e293b;padding:14px 20px;border-left:4px solid;transform:translateX(120%);transition:.3s}
-.toast.show{transform:translateX(0)}
-.toast-success{border-color:#10b981}
-.toast-error{border-color:#ef4444}
-#toast-container{position:fixed;top:24px;right:24px;z-index:100}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background: #0f172a;
+    color: #f8fafc;
+}
+
+/* Glass */
+.glass {
+    background: rgba(30,41,59,.7);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,.08);
+}
+
+/* Code / Syntax */
+.code {
+    background: #020617;
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 12px;
+    padding: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    overflow-x: auto;
+}
+.kw { color:#c084fc }
+.str { color:#86efac }
+.fn { color:#60a5fa }
+.cm { color:#64748b }
+
+.copy-btn {
+    position:absolute;
+    top:10px;
+    right:10px;
+    font-size:12px;
+    padding:4px 8px;
+    background:#1e293b;
+    border:1px solid #334155;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+#toast {
+    position:fixed;
+    top:20px;
+    right:20px;
+    z-index:100;
+}
+.toast {
+    background:#1e293b;
+    padding:14px 20px;
+    border-left:4px solid;
+    margin-bottom:10px;
+    transform:translateX(120%);
+    transition:.3s;
+}
+.toast.show { transform:translateX(0) }
+.toast.success { border-color:#10b981 }
+.toast.error { border-color:#ef4444 }
 </style>
 </head>
 
-<body class="min-h-screen flex items-center justify-center p-6">
+<body class="min-h-screen">
 
-<div id="toast-container"></div>
+<div id="toast"></div>
 
-<div class="w-full max-w-3xl bg-slate-900/70 border border-slate-700 rounded-3xl p-6">
+<!-- NAV -->
+<nav class="glass sticky top-0 z-50 px-6 py-4 flex justify-between">
+    <div class="text-2xl font-bold cursor-pointer" onclick="switchTab('upload')">
+        Arsy<span class="text-indigo-400">Host</span>
+    </div>
+    <div class="space-x-4">
+        <button onclick="switchTab('upload')">Upload</button>
+        <button onclick="switchTab('about')">About</button>
+        <button onclick="switchTab('api')">API Docs</button>
+    </div>
+</nav>
 
-<!-- Upload -->
-<div id="dropZone" class="border-2 border-dashed border-slate-600 rounded-2xl p-14 text-center cursor-pointer">
-<input type="file" id="fileInput" hidden accept="image/*">
-<i class="fa-solid fa-cloud-arrow-up text-4xl text-indigo-400"></i>
-<h3 class="mt-4 text-xl font-bold">Drop image here</h3>
-<p class="text-slate-400 text-sm">or click to browse</p>
+<main class="p-6">
+
+<!-- UPLOAD -->
+<section id="page-upload" class="tab glass max-w-3xl mx-auto p-6 rounded-3xl">
+    <div id="dropZone" class="border-2 border-dashed border-slate-600 rounded-2xl p-14 text-center cursor-pointer">
+        <input type="file" id="fileInput" hidden accept="image/*">
+        <i class="fa-solid fa-cloud-arrow-up text-4xl text-indigo-400"></i>
+        <h3 class="mt-4 text-xl font-bold">Drop image here</h3>
+        <p class="text-slate-400 text-sm">or click to browse</p>
+    </div>
+
+    <div id="progress" class="hidden mt-6">
+        <div class="w-full h-3 bg-slate-800 rounded">
+            <div id="bar" class="h-full bg-indigo-500 w-0"></div>
+        </div>
+    </div>
+
+    <div id="result" class="hidden mt-6 space-y-4">
+        <img id="preview" class="w-full h-64 object-cover rounded-xl bg-slate-800">
+        <input id="direct" readonly class="w-full p-3 rounded bg-slate-800">
+        <input id="html" readonly class="w-full p-3 rounded bg-slate-800">
+        <input id="md" readonly class="w-full p-3 rounded bg-slate-800">
+    </div>
+</section>
+
+<!-- ABOUT -->
+<section id="page-about" class="tab hidden glass max-w-3xl mx-auto p-6 rounded-3xl">
+    <h2 class="text-3xl font-bold mb-2">About ArsyHost</h2>
+    <p class="text-slate-400">
+        Free image hosting powered by Cloudflare Edge and Telegram document storage.
+    </p>
+</section>
+
+<!-- API DOCS -->
+<section id="page-api" class="tab hidden max-w-5xl mx-auto space-y-8">
+
+<div class="glass p-6 rounded-3xl">
+<h2 class="text-3xl font-bold mb-2">API Documentation</h2>
+<p class="text-slate-400 text-sm">Upload images as documents.</p>
 </div>
 
-<!-- Progress -->
-<div id="progressContainer" class="hidden mt-6">
-<div class="w-full h-3 bg-slate-800 rounded">
-<div id="progressBar" class="h-full bg-indigo-500 w-0"></div>
+<div class="glass p-6 rounded-3xl relative">
+<button class="copy-btn" onclick="copy('endpoint')">Copy</button>
+<div id="endpoint" class="code">
+<span class="kw">POST</span> <span class="str">https://arsyhost.pages.dev/upload</span>
 </div>
 </div>
 
-<!-- Result -->
-<div id="resultArea" class="hidden mt-6 space-y-4">
+<div class="glass p-6 rounded-3xl relative">
+<button class="copy-btn" onclick="copy('js')">Copy</button>
+<pre id="js" class="code"><code>
+<span class="cm">// JavaScript</span>
+<span class="kw">const</span> form = <span class="kw">new</span> FormData();
+form.<span class="fn">append</span>(<span class="str">'file'</span>, file);
 
-<img id="preview" class="w-full h-64 object-cover rounded-xl bg-slate-800">
+<span class="kw">const</span> res = <span class="kw">await</span> <span class="fn">fetch</span>(
+<span class="str">'https://arsyhost.pages.dev/upload'</span>,
+{ method:<span class="str">'POST'</span>, body:form }
+);
 
-<div>
-<label class="text-xs text-slate-400">Direct URL</label>
-<input id="directUrl" readonly class="copy-input w-full p-3 rounded">
+<span class="kw">const</span> data = <span class="kw">await</span> res.<span class="fn">json</span>();
+</code></pre>
 </div>
 
-<div>
-<label class="text-xs text-slate-400">HTML Embed</label>
-<input id="htmlUrl" readonly class="copy-input w-full p-3 rounded">
+<div class="glass p-6 rounded-3xl relative">
+<button class="copy-btn" onclick="copy('curl')">Copy</button>
+<pre id="curl" class="code"><code>
+curl -X POST https://arsyhost.pages.dev/upload \
+ -F "file=@image.jpg"
+</code></pre>
 </div>
 
-<div>
-<label class="text-xs text-slate-400">Markdown</label>
-<input id="mdUrl" readonly class="copy-input w-full p-3 rounded">
+<div class="glass p-6 rounded-3xl">
+<h3 class="text-xl font-bold mb-4">Live API Tester</h3>
+<input type="file" id="apiFile" class="mb-4">
+<button onclick="testApi()" class="px-6 py-3 bg-indigo-600 rounded-xl font-bold">
+Send Request
+</button>
+<pre id="apiOut" class="code mt-4 hidden"></pre>
 </div>
 
-</div>
+</section>
 
-</div>
+</main>
 
 <script>
-const dropZone=document.getElementById("dropZone");
-const fileInput=document.getElementById("fileInput");
-const progress=document.getElementById("progressContainer");
-const bar=document.getElementById("progressBar");
+const tabs=document.querySelectorAll(".tab");
+function switchTab(id){
+tabs.forEach(t=>t.classList.add("hidden"));
+document.getElementById("page-"+id).classList.remove("hidden");
+window.scrollTo(0,0);
+}
+document.addEventListener("DOMContentLoaded",()=>switchTab("upload"));
 
-dropZone.onclick=()=>fileInput.click();
-fileInput.onchange=e=>upload(e.target.files[0]);
+const dz=document.getElementById("dropZone");
+const fi=document.getElementById("fileInput");
+const prog=document.getElementById("progress");
+const bar=document.getElementById("bar");
+
+dz.onclick=()=>fi.click();
+fi.onchange=e=>upload(e.target.files[0]);
 
 function toast(msg,type="success"){
 const t=document.createElement("div");
-t.className=`toast toast-${type}`;
-t.innerText=msg;
-document.getElementById("toast-container").appendChild(t);
+t.className=`toast ${type}`;
+t.textContent=msg;
+document.getElementById("toast").appendChild(t);
 requestAnimationFrame(()=>t.classList.add("show"));
 setTimeout(()=>t.remove(),3000);
 }
 
 async function upload(file){
 if(!file)return;
-
-progress.classList.remove("hidden");
-dropZone.classList.add("hidden");
+prog.classList.remove("hidden");
+dz.classList.add("hidden");
 
 const form=new FormData();
 form.append("file",file);
 
 let w=0;
-const anim=setInterval(()=>{if(w<90){w+=5;bar.style.width=w+"%"}},100);
+const i=setInterval(()=>{if(w<90){w+=5;bar.style.width=w+"%"}},100);
 
 try{
-const res=await fetch("https://arsyhost.pages.dev/upload",{
-method:"POST",
-body:form
-});
-const data=await res.json();
-
-clearInterval(anim);
+const r=await fetch("https://arsyhost.pages.dev/upload",{method:"POST",body:form});
+const d=await r.json();
+clearInterval(i);
 bar.style.width="100%";
 
-if(!data.url)throw Error("Upload failed");
-
-const url=data.url;
-
-// preview (document-based image still works)
+const url=d.url;
 const img=new Image();
-img.onload=()=>document.getElementById("preview").src=url;
-img.onerror=()=>toast("Preview load failed","error");
+img.onload=()=>preview.src=url;
 img.src=url;
 
-// outputs
-document.getElementById("directUrl").value=url;
-document.getElementById("htmlUrl").value=`<img src="${url}" alt="ArsyHost Image">`;
-document.getElementById("mdUrl").value=`![ArsyHost Image](${url})`;
+direct.value=url;
+html.value=`<img src="${url}">`;
+md.value=`![image](${url})`;
 
-progress.classList.add("hidden");
-document.getElementById("resultArea").classList.remove("hidden");
+prog.classList.add("hidden");
+result.classList.remove("hidden");
 toast("Upload successful");
-
 }catch(e){
 toast(e.message,"error");
 location.reload();
+}
+}
+
+function copy(id){
+navigator.clipboard.writeText(document.getElementById(id).innerText);
+toast("Copied");
+}
+
+async function testApi(){
+const f=document.getElementById("apiFile").files[0];
+if(!f)return toast("Select file","error");
+const form=new FormData();
+form.append("file",f);
+const out=document.getElementById("apiOut");
+out.classList.remove("hidden");
+out.textContent="Sending...";
+try{
+const r=await fetch("https://arsyhost.pages.dev/upload",{method:"POST",body:form});
+out.textContent=JSON.stringify(await r.json(),null,2);
+}catch(e){
+out.textContent=e.message;
 }
 }
 </script>
